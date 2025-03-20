@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error 404 - Can't Escape</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #6978ff, #55b3ff);
+            font-family: "Segoe UI", Arial, sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        .window {
+            position: absolute;
+            width: 350px;
+            background-color: #f0f0f0;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+        
+        .window-title {
+            background: linear-gradient(to bottom, #0078d7, #0067c0);
+            color: white;
+            padding: 8px 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            cursor: move;
+        }
+        
+        .title-text {
+            display: flex;
+            align-items: center;
+        }
+        
+        .title-text img {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+        }
+        
+        .window-controls {
+            display: flex;
+        }
+        
+        .window-button {
+            width: 16px;
+            height: 16px;
+            margin-left: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        
+        .window-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .close-button {
+            font-weight: bold;
+        }
+        
+        .close-button:hover {
+            background-color: #e81123;
+        }
+        
+        .window-content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #e81123;
+        }
+        
+        .error-message {
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .error-details {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .error-button {
+            padding: 6px 20px;
+            background: linear-gradient(to bottom, #f0f0f0, #e5e5e5);
+            border: 1px solid #b5b5b5;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .error-button:hover {
+            background: linear-gradient(to bottom, #e5e5e5, #ddd);
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+
+    <script>
+        let windowCount = 0;
+        const windowSpacing = 20;
+        const container = document.getElementById('container');
+        
+        function createWindow() {
+            windowCount++;
+            
+            const window = document.createElement('div');
+            window.className = 'window';
+            
+            // Calculate position for new window
+            const xOffset = (windowCount % 5) * windowSpacing;
+            const yOffset = (windowCount % 5) * windowSpacing;
+            
+            // Set window position
+            window.style.left = `calc(50% - 175px + ${xOffset}px)`;
+            window.style.top = `calc(50% - 125px + ${yOffset}px)`;
+            
+            // Create window content
+            window.innerHTML = `
+                <div class="window-title">
+                    <div class="title-text">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAATFJREFUOE+Vk71KQ0EQhQ8IFmJhYWGhhYVgYWFhYZFCsND3sEkhWFhYWFoIFhYWFhYWgkUKwUJJIVhYWFgIFhYWFoJFCiGec+/cYe/dzY/xwMdmZ2bP7GY31mhgDDfwBJ/wDrewjS7+xSLu4BfKeME+FrCORaziBd5gD2p8M6pM9dSsDQOcQ5O/4BZuoOLHxNPLmmzBJvpBHzUG+hDR8FKRp/IWtMCHYhgdL4W8VTdHEz2WyPNSyDt1M8xwTqYlQtGhTXxJvOOlkI/qpljDtJcJxg4KDr0U8l3dFMNEXpHaA6c4QnMo+9AIe2jMtOEYtlE7qH5rLzQ2o6yPk2xMWQWN6cMJfEOT9JFOoNNVUZ7qZFmVMo+oNtQLBRvQr2CjJVg1jKbFEGcxRKyHFtGC+ZX9ARpHXB+rQHBhAAAAAElFTkSuQmCC">
+                        Error 404
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-button minimize-button">_</div>
+                        <div class="window-button maximize-button">□</div>
+                        <div class="window-button close-button">✕</div>
+                    </div>
+                </div>
+                <div class="window-content">
+                    <div class="error-icon">❌</div>
+                    <div class="error-message">Error 404: Page Not Found</div>
+                    <div class="error-details">The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</div>
+                    <button class="error-button">OK</button>
+                </div>
+            `;
+            
+            container.appendChild(window);
+            
+            // Make window draggable
+            const titleBar = window.querySelector('.window-title');
+            makeDraggable(window, titleBar);
+            
+            // Add event listeners
+            const closeButton = window.querySelector('.close-button');
+            closeButton.addEventListener('click', function() {
+                // Instead of closing, create two new windows
+                createWindow();
+                createWindow();
+            });
+            
+            const okButton = window.querySelector('.error-button');
+            okButton.addEventListener('click', function() {
+                // Same as close button
+                createWindow();
+                createWindow();
+            });
+        }
+        
+        function makeDraggable(element, handle) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            handle.onmousedown = dragMouseDown;
+            
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // Get the mouse cursor position at startup
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                // Call a function whenever the cursor moves
+                document.onmousemove = elementDrag;
+                
+                // Bring window to front
+                const windows = document.querySelectorAll('.window');
+                windows.forEach(win => {
+                    win.style.zIndex = '100';
+                });
+                element.style.zIndex = '101';
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // Calculate the new cursor position
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // Set the element's new position
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+            
+            function closeDragElement() {
+                // Stop moving when mouse button is released
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+        
+        // Create the first window when the page loads
+        window.onload = function() {
+            createWindow();
+        };
+    </script>
+</body>
+</html>
