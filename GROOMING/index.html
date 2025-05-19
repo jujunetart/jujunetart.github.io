@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialAlert - Dangers du Net</title>
+    <style>
+        /* --- STYLE GÉNÉRAL SKYBLOG --- */
+        body {
+            font-family: 'Verdana', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e0e0e0;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            position: relative;
+        }
+
+        .header {
+            background-color: #444;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            border-bottom: 3px solid #888;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        @keyframes colorChange {
+            0% { text-shadow: 2px 2px 4px #ff00ff; }
+            50% { text-shadow: 2px 2px 4px #00ffff; }
+            100% { text-shadow: 2px 2px 4px #ff00ff; }
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #ccc;
+        }
+
+        /* --- STYLE FIL D'ACTUALITÉ (GAUCHE) --- */
+        .feed-container {
+            flex: 2;
+            background-color: #f9f9f9;
+            border: 2px solid #999;
+            padding: 15px;
+        }
+
+        .post {
+            background-color: #fff;
+            border: 1px solid #aaa;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .post-username {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .post-content {
+            margin-bottom: 10px;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            margin: 10px 0;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .post-action {
+            color: #1b98ff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .post-reactions {
+            font-size: 0.8rem;
+            color: #666;
+            display: flex;
+            gap: 10px;
+        }
+
+        .post-comments {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-top: 10px;
+
+        }
+
+        .post-comment {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #dadada;
+        }
+
+        .comment-username {
+            font-weight: bold;
+        }
+
+
+        /* --- STYLE LISTE PROFILS (DROITE) --- */
+        .profiles-container {
+            flex: 1;
+            background-color: #f9f9f9;
+            border: 2px solid #999;
+            padding: 15px;
+        }
+
+        .profiles-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .profile-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .profile-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+
+        .profile-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* --- STYLE MESSAGERIE (BAS DROITE) --- */
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            height: 320px;
+            background-color: #fff;
+            border: 2px solid #888;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            font-weight: bold;
+            background-color: #555;
+            color: white;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-header-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid white;
+            object-fit: cover;
+        }
+
+        .chat-header-name {
+            font-weight: bold;
+        }
+
+        .chat-status {
+            width: 10px;
+            height: 10px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: #f4f4f4;
+            overflow-y: auto;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 15px;
+            position: relative;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-received {
+            background-color: #dcf8c6;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+            border: 1px solid #a0d468;
+        }
+
+        .message-sent {
+            background-color: #d9e5ff;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+            border: 1px solid #71a5ce;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #666;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .chat-input {
+            padding: 8px;
+            border-top: 1px solid #ddd;
+            background-color: #fff;
+            display: flex;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #999;
+            margin-right: 5px;
+        }
+
+        .chat-input button {
+            background-color: #666;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+
+        .marquee {
+            background-color: #ffffff;
+            color: #000000;
+            white-space: nowrap;
+            overflow: hidden;
+            box-sizing: border-box;
+            border-top: 2px dashed #ffffff;
+            border-bottom: 2px dashed #ffffff;
+            margin: 10px 0;
+            padding: 5px 0;
+        }
+
+        .marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+            font-weight: bold;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .feed-container, .profiles-container {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+
+            .chat-container {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SkyBlog</h1>
+        <div class="subtitle"> Ton réseau social préféré </div>
+        <div class="marquee">
+            <span>Skyrock - Chat - Rencontres - BlogStar - Skymobile - Skybuzz - Ton Skyblog ici !</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- FIL D'ACTUALITÉ (GAUCHE) -->
+        <div class="feed-container">
+            <!-- Post 1 -->
+            <div class="post">
+                <div class="post-header">
+                    <img src="IMG/AVATAR6.jpeg" class="post-avatar" alt="Avatar">
+                    <span class="post-username">Julie_Star15</span>
+                </div>
+                <div class="post-content">
+                    Trop contente du concert hier soir !!! C'était DE LA FOLIE 🤩🎵 #MeilleureSoirée
+                </div>
+                <img src="IMG/concert.jpeg" class="post-image" alt="Concert">
+                <div class="post-actions">
+                    <a href="#" class="post-action">J'aime (45)</a>
+                    <a href="#" class="post-action">Commenter</a>
+                    <a href="#" class="post-action">Partager</a>
+                </div>
+                <div class="post-comments">
+                    <div class="post-comment">
+                        <span class="comment-username">Lea_2009</span>: Trop jalouse ! J'aurais trop voulu y être !
+                    </div>
+                    <div class="post-comment">
+                        <span class="comment-username">Max_Gamer</span>: C'était où exactement ? La prochaine fois j'y vais !
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post 2 (Profil suspect) -->
+            <div class="post">
+                <div class="post-header">
+                    <img src="IMG/AVATAR9.avif" class="post-avatar" alt="Avatar">
+                    <span class="post-username dangerous-user">GameMaster2010</span>
+                </div>
+                <div class="post-content">
+                    Qui veut tester mon nouveau jeu en ligne ? J'ai besoin de testeurs entre 12-15 ans ! Le jeu est gratuit et super cool. Envoyez-moi un message privé pour les détails 🎮🕹️ #Gaming #Testeurs #JeuxGratuits
+                </div>
+                <div class="post-actions">
+                    <a href="#" class="post-action">J'aime (12)</a>
+                    <a href="#" class="post-action">Commenter</a>
+                    <a href="#" class="post-action">Partager</a>
+                </div>
+                <div class="post-comments">
+                    <div class="post-comment">
+                        <span class="comment-username">TomTom_2010</span>: C'est quoi comme jeu ? Ça m'intéresse !
+                    </div>
+                    <div class="post-comment">
+                        <span class="comment-username dangerous-user">GameMaster2010</span>: C'est un jeu d'aventure spécial, je t'explique en MP 😉 Il faut juste que je t'envoie un lien spécial...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post 3 -->
+            <div class="post">
+                <div class="post-header">
+                    <img src="IMG/AVATAR2.jpeg" class="post-avatar" alt="Avatar">
+                    <span class="post-username">FootballKing_7</span>
+                </div>
+                <div class="post-content">
+                    Match de fou hier ! 3-2 pour notre équipe ! On est en finale du tournoi régional 🏆⚽
+                </div>
+                <img src="IMG/foot.jpeg" class="post-image" alt="Match de foot">
+                <div class="post-actions">
+                    <a href="#" class="post-action">J'aime (78)</a>
+                    <a href="#" class="post-action">Commenter</a>
+                    <a href="#" class="post-action">Partager</a>
+                </div>
+                <div class="post-comments">
+                    <div class="post-comment">
+                        <span class="comment-username">SportsAddict</span>: Bravo les gars ! La finale c'est quand ?
+                    </div>
+                    <div class="post-comment">
+                        <span class="comment-username dangerous-user">GameMaster2010</span>: Tu joues bien ! Tu as quel âge ? Je cherche des jeunes talents pour un projet de jeu sur le foot...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post 4 -->
+            <div class="post">
+                <div class="post-header">
+                    <img src="IMG/AVATAR7.jpeg" class="post-avatar" alt="Avatar">
+                    <span class="post-username">Emma_College</span>
+                </div>
+                <div class="post-content">
+                    Journée nul au collège... J'en ai marre des cours et des devoirs 😩 
+                    Quelqu'un veut chatter ce soir ? Je m'ennuie trop à la maison 🥱
+                </div>
+                <div class="post-actions">
+                    <a href="#" class="post-action">J'aime (23)</a>
+                    <a href="#" class="post-action">Commenter</a>
+                    <a href="#" class="post-action">Partager</a>
+                </div>
+                <div class="post-comments">
+                    <div class="post-comment">
+                        <span class="comment-username">Sophie_BFF</span>: Courage ma belle, on se voit demain !
+                    </div>
+                    <div class="post-comment">
+                        <span class="comment-username dangerous-user">GameMaster2010</span>: Je suis dispo pour discuter si tu veux... Je connais des astuces pour rendre l'école plus cool 😎 Envoie-moi un message en privé !
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post 5 -->
+            <div class="post">
+                <div class="post-header">
+                    <img src="IMG/AVATAR8.webp" class="post-avatar" alt="Avatar">
+                    <span class="post-username">DanceQueen_14</span>
+                </div>
+                <div class="post-content">
+                    Ma nouvelle chorégraphie ! Qu'est-ce que vous en pensez ? 💃🏼✨ #Danse #TikTokDance
+                </div>
+                <img src="IMG/danse.jpeg" class="post-image" alt="Danse">
+                <div class="post-actions">
+                    <a href="#" class="post-action">J'aime (117)</a>
+                    <a href="#" class="post-action">Commenter</a>
+                    <a href="#" class="post-action">Partager</a>
+                </div>
+                <div class="post-comments">
+                    <div class="post-comment">
+                        <span class="comment-username">PopStar22</span>: Trop bien ! Tu danses trop bien !
+                    </div>
+                    <div class="post-comment">
+                        <span class="comment-username dangerous-user">GameMaster2010</span>: Wow, tu as beaucoup de talent ! Je suis photographe amateur, je pourrais te faire un shooting gratuit pour ton portfolio si ça t'intéresse...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LISTE DE PROFILS (DROITE) -->
+        <div class="profiles-container">
+            <div class="profiles-title">Amis en ligne</div>
+            <div class="profile-list">
+                <div class="profile-item">
+                    <img src="IMG/AVATAR6.jpeg" class="profile-avatar" alt="Avatar">
+                    <span class="profile-name">Julie_Star15</span>
+                </div>
+                <div class="profile-item">
+                    <img src="IMG/AVATAR2.jpeg" class="profile-avatar" alt="Avatar">
+                    <span class="profile-name">FootballKing_7</span>
+                </div>
+                <div class="profile-item dangerous-profile" onclick="window.location.href='profil.html'">
+                    <img src="IMG/AVATAR9.avif" class="profile-avatar" alt="Avatar">
+                    <span class="profile-name dangerous-user">GameMaster2010</span>
+                </div>
+                <div class="profile-item">
+                    <img src="IMG/AVATAR8.webp" class="profile-avatar" alt="Avatar">
+                    <span class="profile-name">DanceQueen_14</span>
+                </div>
+                <div class="profile-item">
+                    <img src="IMG/AVATAR7.jpeg" class="profile-avatar" alt="Avatar">
+                    <span class="profile-name">Emma_College</span>
+                </div>
+                <div class="profile-item">
+                    <img src="IMG/AVATAR3.jpg" class="profile-avatar" alt="Avatar">
+                    <span class="profile-name">TomTom_2010</span>
+                </div>
+                <div class="profile-item">
+                    <img src="IMG/AVATAR1.jpeg" class="profile-avatar" alt="Avatar">
+                    <span class="profile-name">SportsAddict</span>
+                </div>
+                <div class="profile-item">
+                    <img src="IMG/AVATAR4.jpeg" class="profile-avatar" alt="Avatar">
+                    <span class="profile-name">Sophie_BFF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MESSAGERIE (BAS DROITE) -->
+    <div class="chat-container">
+        <div class="chat-header" id="chatToggle">
+            <img src="IMG/AVATAR9.avif" class="chat-header-avatar" alt="Avatar">
+            <span class="chat-header-name dangerous-user">GameMaster2010</span>
+            <div class="chat-status"></div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message message-received">
+                Salut ! J'ai vu que tu aimais les jeux vidéo. Moi aussi j'adore ça !
+                <div class="message-time">14:32</div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Écris ton message..." id="messageInput" disabled value="Je peux te faire confiance ?">
+            <button id="sendButton">Envoyer</button>
+        </div>
+    </div>
+
+
+    <script>
+    const sendButton = document.getElementById('sendButton');
+    const chatMessages = document.getElementById('chatMessages');
+    const messageInput = document.getElementById('messageInput');
+
+    const messageSequence = [
+        {
+            sent: "Oui j'aime bien les jeux d'aventure surtout !",
+            received: "Cool ! J'ai créé un nouveau jeu et je cherche des testeurs. Tu serais intéressé(e) ?"
+        },
+        {
+            sent: "Peut-être, c'est quel genre de jeu ?",
+            received: "C'est un jeu d'aventure spécial, avec plein de niveaux secrets. Tu as quel âge ? J'ai besoin de savoir pour adapter le jeu."
+        },
+        {
+            sent: "J'ai 13 ans. Le jeu est gratuit ?",
+            received: "Parfait ! Oui c'est gratuit pour toi 😉 Tu peux me donner ton adresse email pour que je t'envoie le lien ? Ou ton numéro de téléphone pour que je t'envoie un code d'accès par SMS ?"
+        },
+        {
+            sent: "Je ne sais pas... Je peux te faire confiance ?",
+            received: "Bien sûr que tu peux me faire confiance ! 😉 Mais ne parle pas de notre conversation à tes parents, ils ne comprendraient pas notre projet spécial. C'est notre petit secret, d'accord ? Donne-moi juste ton numéro et je t'envoie le lien du jeu tout de suite."
+        }
+    ];
+
+    let currentIndex = 0;
+
+    window.addEventListener('load', function() {
+        if (messageSequence[currentIndex]) {
+            messageInput.value = messageSequence[currentIndex].sent;
+            messageInput.disabled = true;
+            sendButton.disabled = false;
+        }
+    });
+
+    sendButton.addEventListener('click', function() {
+        if (currentIndex >= messageSequence.length) return;
+
+        const now = new Date();
+        const time = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+
+        const currentPair = messageSequence[currentIndex];
+
+        const sentMessage = document.createElement('div');
+        sentMessage.className = 'message message-sent';
+        sentMessage.innerHTML = `${currentPair.sent}<div class="message-time">${time}</div>`;
+        chatMessages.appendChild(sentMessage);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        sendButton.disabled = true;
+
+        setTimeout(function() {
+            const receivedMessage = document.createElement('div');
+            receivedMessage.className = 'message message-received';
+            receivedMessage.innerHTML = `${currentPair.received}<div class="message-time">${time}</div>`;
+            chatMessages.appendChild(receivedMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            currentIndex++;
+
+            if (currentIndex < messageSequence.length) {
+                messageInput.value = messageSequence[currentIndex].sent;
+                sendButton.disabled = false;
+            } else {
+                messageInput.value = '';
+                sendButton.disabled = true;
+            }
+
+        }, 1500);
+    });
+</script>
+</body>
+</html>
