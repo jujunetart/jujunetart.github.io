@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Espaces et frontières</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.17/interact.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'MS Sans Serif', Tahoma, sans-serif;
+      overflow: hidden;
+      background-color: #000;
+      user-select: none;
+    }
+
+    #desktop {
+      width: 100vw;
+      height: 100vh;
+      background-image: url('IMG/fond.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .icon-grid {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      grid-template-rows: repeat(6, 90px);
+      gap: 5px;
+    }
+
+    .icon-container {
+      position: relative;
+      width: 80px;
+      height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      touch-action: none;
+      z-index: 2;
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      cursor: grab;
+    }
+
+    .icon-label {
+      color: white;
+      font-size: 11px;
+      text-align: center;
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+      margin-top: 5px;
+      max-width: 80px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    #recycle-bin {
+      position: absolute;
+      bottom: 90px; /* Ajusté pour laisser de la place à la taskbar */
+      right: 7px;
+      width: 60px;
+      height: 60px;
+      background-image: url('IMG/bin.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+
+
+    #blue-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #0000AA;
+      color: white;
+      font-family: 'Courier New', monospace;
+      padding: 50px;
+      box-sizing: border-box;
+      display: none;
+      z-index: 1000;
+    }
+
+    #blue-screen h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    #blue-screen p {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .drop-zone {
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 2px dashed rgba(255, 255, 255, 0.7);
+      border-radius: 5px;
+    }
+
+    #recycle-bin.drop-target {
+      box-shadow: 0 0 10px 4px rgba(255, 0, 0, 0.6);
+      transform: scale(1.1);
+      transition: all 0.2s ease;
+    }
+
+    .dragging {
+      opacity: 0.7;
+      z-index: 100;
+      cursor: grabbing;
+    }
+
+    /* === TASKBAR WINDOWS 98 === */
+    #taskbar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 32px;
+      width: 100%;
+      background-color: #c0c0c0;
+      border-top: 2px solid #fff;
+      border-left: 2px solid #fff;
+      border-right: 2px solid #000000;
+      border-bottom: 2px solid #000000;
+      display: flex;
+      align-items: center;
+      font-family: 'MS Sans Serif', Tahoma, sans-serif;
+      z-index: 100;
+    }
+
+    #start-button {
+      display: flex;
+      align-items: center;
+      background-color: #c0c0c0;
+      border: 2px outset #fff;
+      height: 28px;
+      margin: 2px;
+      padding: 0 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    #start-button img {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+
+    #taskbar-space {
+      flex-grow: 1;
+    }
+
+    #clock {
+      padding: 0 10px;
+      font-size: 13px;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div id="desktop">
+    <div class="icon-grid" id="icon-grid"></div>
+    
+    <div id="recycle-bin-container" class="icon-container" style="position: absolute; bottom: 20px; right: 20px;">
+        <div id="recycle-bin" class="icon" style="background-image: url('IMG/bin.png');"></div>
+        <div class="icon-label">Corbeille</div>
+      </div>
+      
+  </div>
+
+  <div id="blue-screen">
+    <h1>ERREUR FATALE</h1>
+    <p>SATURATION_DE_L_ESPACE_DE_STOCKAGE</p>
+    <p>Le système a détecté une violation critique des limites d'espace.</p>
+    <p>Vos données se sont dissoutes dans le néant numérique.</p>
+    <p>Tout ce qui a été supprimé ne peut être retrouvé.</p>
+    <p>Nous sommes tous prisonniers de nos propres frontières virtuelles.</p>
+    <p>* Appuyez sur n'importe quelle touche pour méditer sur l'impermanence *</p>
+  </div>
+
+  <!-- === TASKBAR === -->
+  <div id="taskbar">
+    <button id="start-button">
+      <img src="IMG/start.png" alt="Start" />
+      <span>Démarrer</span>
+    </button>
+    <div id="taskbar-space"></div>
+    <div id="clock">12:00</div>
+  </div>
+
+  <audio id="bscreen-sound" src="IMG/bscreen.wav" preload="auto"></audio>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const iconGrid = document.getElementById('icon-grid');
+      const recycleBin = document.getElementById('recycle-bin');
+      const blueScreen = document.getElementById('blue-screen');
+
+      let filesInBin = 0;
+      let totalIcons = 18;
+      let deletedIcons = [];
+      let currentlyDragging = null;
+
+      createIcons();
+
+      function createIcons() {
+        const fileNames = [
+          'projet', 'photo', 'rapport', 'presentation', 'musique', 'video',
+          'budget', 'notes', 'archive', 'image', 'contact', 'calendrier',
+          'these', 'script', 'style', 'index', 'data', 'config'
+        ];
+
+        for (let i = 0; i < totalIcons; i++) {
+          const iconContainer = document.createElement('div');
+          iconContainer.className = 'icon-container';
+          iconContainer.id = 'container-' + i;
+          iconContainer.dataset.x = 0;
+          iconContainer.dataset.y = 0;
+
+          const icon = document.createElement('div');
+          icon.className = 'icon';
+          icon.id = 'icon-' + i;
+
+          const fileName = fileNames[i];
+          icon.style.backgroundImage = `url('IMG/icon-${fileName}.png')`;
+
+          const label = document.createElement('div');
+          label.className = 'icon-label';
+          label.textContent = fileName + getExtension(fileName);
+
+          iconContainer.appendChild(icon);
+          iconContainer.appendChild(label);
+          document.getElementById('desktop').appendChild(iconContainer);
+
+          const col = i % 3;
+          const row = Math.floor(i / 3);
+          iconContainer.style.position = 'absolute';
+          iconContainer.style.left = `${20 + col * 85}px`;
+          iconContainer.style.top = `${20 + row * 95}px`;
+        }
+
+        setupInteract();
+      }
+
+      function getExtension(name) {
+        const extensions = {
+          'projet': '.doc', 'photo': '.jpg', 'rapport': '.xls',
+          'presentation': '.ppt', 'musique': '.mp3', 'video': '.avi',
+          'budget': '.xlsx', 'notes': '.txt', 'archive': '.zip',
+          'image': '.png', 'contact': '.vcf', 'calendrier': '.ics',
+          'these': '.pdf', 'script': '.js', 'style': '.css',
+          'index': '.html', 'data': '.xml', 'config': '.json'
+        };
+        return extensions[name] || '';
+      }
+
+      function setupInteract() {
+        interact('.icon-container').draggable({
+          inertia: true,
+          modifiers: [interact.modifiers.restrictRect({ restriction: 'parent', endOnly: true })],
+          autoScroll: true,
+          listeners: {
+            start(event) {
+              currentlyDragging = event.target.id;
+              event.target.classList.add('dragging');
+            },
+            move(event) {
+              const target = event.target;
+              const x = (parseFloat(target.dataset.x) || 0) + event.dx;
+              const y = (parseFloat(target.dataset.y) || 0) + event.dy;
+              target.style.transform = `translate(${x}px, ${y}px)`;
+              target.dataset.x = x;
+              target.dataset.y = y;
+            },
+            end(event) {
+              event.target.classList.remove('dragging');
+              currentlyDragging = null;
+
+              const recycleBinRect = recycleBin.getBoundingClientRect();
+              const targetRect = event.target.getBoundingClientRect();
+              if (isOverlap(targetRect, recycleBinRect) && !deletedIcons.includes(event.target.id)) {
+                deleteIcon(event.target);
+              }
+            }
+          }
+        });
+
+        interact('#recycle-bin').dropzone({
+          accept: '.icon-container',
+          overlap: 0.5,
+          ondropactivate: event => event.target.classList.add('drop-zone'),
+          ondragenter: event => {
+            event.target.classList.add('drop-target');
+            event.relatedTarget.classList.add('can-drop');
+          },
+          ondragleave: event => {
+            event.target.classList.remove('drop-target');
+            event.relatedTarget.classList.remove('can-drop');
+          },
+          ondrop: event => {
+            if (!deletedIcons.includes(event.relatedTarget.id)) {
+              deleteIcon(event.relatedTarget);
+            }
+          },
+          ondropdeactivate: event => {
+            event.target.classList.remove('drop-zone', 'drop-target');
+          }
+        });
+      }
+
+      function isOverlap(rect1, rect2) {
+        return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom);
+      }
+
+      function deleteIcon(iconContainer) {
+        iconContainer.style.transition = 'all 0.3s ease';
+        iconContainer.style.transform = 'scale(0)';
+        iconContainer.style.opacity = '0';
+        deletedIcons.push(iconContainer.id);
+
+        const deleteSound = new Audio('IMG/delete.wav');
+        deleteSound.play();
+
+        setTimeout(() => {
+          iconContainer.remove();
+          filesInBin++;
+          updateRecycleBin();
+        }, 300);
+      }
+
+      function updateRecycleBin() {
+        if (filesInBin >= 18) {
+          setTimeout(() => {
+            blueScreen.style.display = 'block';
+            const sound = document.getElementById('bscreen-sound');
+            if (sound) sound.play();
+            blueScreen.addEventListener('click', () => location.reload());
+          }, 500);
+        } else if (filesInBin >= 12) {
+          recycleBin.style.backgroundImage = 'url("IMG/bin3.png")';
+        } else if (filesInBin >= 6) {
+          recycleBin.style.backgroundImage = 'url("IMG/bin2.png")';
+        }
+      }
+
+      document.addEventListener('keydown', function () {
+        if (blueScreen.style.display === 'block') {
+          location.reload();
+        }
+      });
+
+      // Horloge de la taskbar
+      setInterval(() => {
+        const clock = document.getElementById('clock');
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        clock.textContent = `${hours}:${minutes}`;
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
