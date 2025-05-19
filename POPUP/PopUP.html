@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pop-up Aléatoire</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        
+        #button-container {
+            text-align: center;
+        }
+        
+        #start-button {
+            padding: 20px 40px;
+            font-size: 24px;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        #start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .popup-image {
+            position: absolute;
+            border-radius: 0px;
+            z-index: 10;
+            transition: opacity 0.3s;
+        }
+        
+        
+        #reset-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            display: none;
+        }
+
+        #clickbait-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffcc00;
+            color: #000;
+            text-align: center;
+            font-size: 18px;
+            padding: 10px;
+            font-weight: bold;
+            animation: blink 1s infinite alternate;
+            z-index: 100;
+        }
+
+        @keyframes blink {
+            from { background: #ffcc00; }
+            to { background: #ff6666; }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="button-container">
+        <button id="start-button">CLIQUEZ ICI !</button>
+    </div>
+    
+    <button id="reset-button">Réinitialiser</button>
+    <div id="clickbait-banner">📰 Vous ne croirez jamais ce qu'il s'est passé à Orléans !</div>
+
+    <audio id="spam-sound" src="https://www.myinstants.com/media/sounds/windows-xp-error.mp3"></audio>
+
+    <script>
+        const startButton = document.getElementById('start-button');
+        const resetButton = document.getElementById('reset-button');
+        const spamSound = document.getElementById('spam-sound');
+        let isActive = false;
+        
+        // Liste des images placeholder
+        const imageSources = [];
+for (let i = 1; i <= 30; i++) {
+    imageSources.push(`IMG/SPAM${i}.gif`);
+}
+  
+        ;
+
+        const baitTexts = [
+            "🛑 3 astuces que votre opérateur cache !",
+            "💸 Cette maman gagne 5000€/mois depuis chez elle...",
+            "📵 Le Minitel revient ? Découvrez-le vite !",
+        ];
+
+        setInterval(() => {
+            document.getElementById('clickbait-banner').textContent =
+                baitTexts[Math.floor(Math.random() * baitTexts.length)];
+        }, 4000);
+
+        
+        startButton.addEventListener('click', function() {
+            if (!isActive) {
+                isActive = true;
+                startButton.style.display = 'none';
+                resetButton.style.display = 'block';
+                createRandomPopups();
+            }
+        });
+        
+        resetButton.addEventListener('click', function() {
+            // Supprimer toutes les images
+            document.querySelectorAll('.popup-image, .popup-alert').forEach(el => el.remove());
+            popupImages.forEach(img => img.remove());
+            counter.textContent = 'Images: 0';
+            document.body.style.filter = '';
+            startButton.style.display = 'block';
+            resetButton.style.display = 'none';
+            isActive = false;
+        });
+        
+        function createRandomPopups() {
+            if (!isActive) return;
+            
+            // Créer une nouvelle image avec des dimensions aléatoires
+            const img = document.createElement('img');
+            img.classList.add('popup-image');
+            
+            // Choisir une source d'image aléatoire
+            const randomSource = imageSources[Math.floor(Math.random() * imageSources.length)];
+            img.src = randomSource;
+            
+            // Dimensions aléatoires (avec limite raisonnable)
+            const width = Math.floor(Math.random() * 250) + 150; // Entre 100px et 300px
+            img.style.width = width + 'px';
+            
+            // Position aléatoire dans les limites de la fenêtre
+            const maxX = window.innerWidth - width;
+            const maxY = window.innerHeight - (width * 0.75); // Approximation pour la hauteur
+            
+            img.style.left = Math.floor(Math.random() * maxX) + 'px';
+            img.style.top = Math.floor(Math.random() * maxY) + 'px';
+            
+            // Ajouter un effet d'apparition
+            img.style.opacity = '0';
+            document.body.appendChild(img);
+
+
+            
+            setTimeout(() => {
+                img.style.opacity = '1';
+            }, 50);
+            
+            spamSound.play();
+
+            if (Math.random() < 0.3) {
+                const alertBox = document.createElement('div');
+                alertBox.classList.add('popup-alert');
+                alertBox.innerHTML = '🎁 <b>VOUS AVEZ GAGNÉ !</b><br> Cliquez ici pour réclamer';
+                alertBox.style.position = 'absolute';
+                alertBox.style.background = '#ffff00';
+                alertBox.style.border = '2px solid red';
+                alertBox.style.padding = '10px';
+                alertBox.style.left = Math.floor(Math.random() * maxX) + 'px';
+                alertBox.style.top = Math.floor(Math.random() * maxY) + 'px';
+                alertBox.style.fontSize = '16px';
+                alertBox.style.cursor = 'pointer';
+                alertBox.onclick = () => alert('🔐 Ce site a été sécurisé par Norton 2004™');
+                document.body.appendChild(alertBox);
+            }
+
+
+            
+            // Programmer la prochaine popup (entre 3 et 10 secondes)
+            const nextDelay = Math.floor(Math.random() * 4000) + 1000;
+            if (isActive) {
+                setTimeout(createRandomPopups, nextDelay);
+            }
+        }
+    </script>
+</body>
+</html>
